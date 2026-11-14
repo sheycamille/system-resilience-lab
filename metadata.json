@@ -1,0 +1,8 @@
+{
+  "name": "Shift-Left Contract & Testability Framework",
+  "description": "Production-grade portfolio showcase demonstrating consumer-driven API contract enforcement, OpenAPI schema validation, lightweight chaos proxy middleware, and automated CI/CD quality gates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

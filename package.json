@@ -1,0 +1,28 @@
+{
+  "name": "shift-left-contract-framework",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "tsc --noEmit && esbuild server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --packages=external",
+    "start": "tsx server.ts",
+    "test": "tsx tests/run-contract-tests.ts",
+    "test:drift": "tsx tests/run-contract-tests.ts --drift",
+    "clean": "rm -rf dist server.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2"
+  }
+}

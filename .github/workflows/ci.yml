@@ -1,0 +1,84 @@
+name: Shift-Left Contract & Quality Gate
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-typecheck:
+    name: 01. Static Typecheck & Schema Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run TypeScript Strict Check
+        run: npm run lint
+
+  contract-gate:
+    name: 02. Shift-Left OpenAPI Contract Verification Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [lint-and-typecheck]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate OpenAPI 3.0 Schemas Against Microservice Endpoints
+        id: run-contract-tests
+        run: npm test
+
+      - name: Publish CI Gate Status
+        if: always()
+        run: |
+          if [ "${{ steps.run-contract-tests.outcome }}" == "success" ]; then
+            echo "::notice title=Contract Gate Passed::All API responses strictly match OpenAPI 3.0.3 contracts. No schema drift detected."
+          else
+            echo "::error title=Merge Blocked::Contract breach detected! Field renamed, dropped, or type mismatched. PR cannot be merged."
+          fi
+
+  chaos-resilience-gate:
+    name: 03. Chaos Proxy Resilience & Fault Tolerance Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [contract-gate]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Chaos Middleware Validation (Latency, 429 Rate Limit & 503 Outage)
+        run: npx tsx tests/run-contract-tests.ts
