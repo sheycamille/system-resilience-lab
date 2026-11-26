@@ -2,9 +2,9 @@ name: Rollout Scope Guardrail & Load Tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: [master]
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   guardrail-and-load-verify:
