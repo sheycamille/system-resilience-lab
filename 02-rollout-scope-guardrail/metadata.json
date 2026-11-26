@@ -1,0 +1,6 @@
+{
+  "name": "Rollout Scope Guardrail & Load Amplification Lab",
+  "description": "Simulated reliability lab demonstrating how feature-flag scope leaks amplify traffic load and how automated policy guardrails and concurrency bulkheads prevent service saturation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

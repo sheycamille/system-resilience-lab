@@ -1,0 +1,55 @@
+{
+  "version": "1.0.2-capped",
+  "description": "Guarded expansion: wider rollout with explicit SRE approval, bounded 25% rollout, and 4-worker bulkhead cap with graceful fast-path degradation.",
+  "workerPoolConfig": {
+    "maxWorkers": 8,
+    "maxQueueSize": 28,
+    "requestTimeoutMs": 140
+  },
+  "rules": [
+    {
+      "id": "deep-payload-inspector",
+      "name": "Deep Payload & Schema Inspector",
+      "enabled": true,
+      "scope": {
+        "cohorts": ["*"],
+        "regions": ["*"],
+        "rolloutPercent": 25,
+        "pathPrefix": "/api/inspect"
+      },
+      "execution": {
+        "executionCostMs": 55,
+        "maxConcurrencyCap": 3,
+        "fallbackOnCap": "degrade_fast"
+      },
+      "approval": {
+        "approvedBy": "sre-release-board",
+        "ticketId": "REL-4082",
+        "maxAllowedAudiencePercent": 30,
+        "reason": "Approved controlled ramp with 4-worker bulkhead and fast fallback"
+      }
+    },
+    {
+      "id": "session-header-enricher",
+      "name": "Lightweight Session Header Enricher",
+      "enabled": true,
+      "scope": {
+        "cohorts": ["internal", "beta"],
+        "regions": ["*"],
+        "rolloutPercent": 20,
+        "pathPrefix": "/api/"
+      },
+      "execution": {
+        "executionCostMs": 4,
+        "maxConcurrencyCap": 6,
+        "fallbackOnCap": "degrade_fast"
+      },
+      "approval": {
+        "approvedBy": "api-core",
+        "ticketId": "REL-3988",
+        "maxAllowedAudiencePercent": 25,
+        "reason": "Low-cost header enrichment for internal and beta cohorts"
+      }
+    }
+  ]
+}

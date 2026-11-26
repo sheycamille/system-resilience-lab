@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0-before",
+  "description": "Scoped internal canary rollout: restricted to internal cohort in us-east at 5% with a 3-worker bulkhead cap.",
+  "workerPoolConfig": {
+    "maxWorkers": 8,
+    "maxQueueSize": 28,
+    "requestTimeoutMs": 140
+  },
+  "rules": [
+    {
+      "id": "deep-payload-inspector",
+      "name": "Deep Payload & Schema Inspector",
+      "enabled": true,
+      "scope": {
+        "cohorts": ["internal"],
+        "regions": ["us-east"],
+        "rolloutPercent": 5,
+        "pathPrefix": "/api/inspect"
+      },
+      "execution": {
+        "executionCostMs": 55,
+        "maxConcurrencyCap": 3,
+        "fallbackOnCap": "degrade_fast"
+      },
+      "approval": {
+        "approvedBy": "platform-reliability",
+        "ticketId": "REL-4012",
+        "maxAllowedAudiencePercent": 5,
+        "reason": "Internal dogfooding for deep payload inspector on /api/inspect"
+      }
+    },
+    {
+      "id": "session-header-enricher",
+      "name": "Lightweight Session Header Enricher",
+      "enabled": true,
+      "scope": {
+        "cohorts": ["internal", "beta"],
+        "regions": ["*"],
+        "rolloutPercent": 20,
+        "pathPrefix": "/api/"
+      },
+      "execution": {
+        "executionCostMs": 4,
+        "maxConcurrencyCap": 6,
+        "fallbackOnCap": "degrade_fast"
+      },
+      "approval": {
+        "approvedBy": "api-core",
+        "ticketId": "REL-3988",
+        "maxAllowedAudiencePercent": 25,
+        "reason": "Low-cost header enrichment for internal and beta cohorts"
+      }
+    }
+  ]
+}

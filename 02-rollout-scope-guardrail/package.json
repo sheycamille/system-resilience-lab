@@ -1,0 +1,23 @@
+{
+  "name": "rollout-scope-guardrail-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "lint": "tsc --noEmit",
+    "policy:check": "tsx scripts/run-policy-check.ts --baseline configs/rules.before.json --candidate configs/rules.capped.json",
+    "policy:check:mutated": "tsx scripts/run-policy-check.ts --baseline configs/rules.before.json --candidate configs/rules.mutated.json",
+    "sim:load": "tsx scripts/run-load-sim.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "ci:verify": "npm run lint && npm test && npm run policy:check"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2"
+  }
+}
